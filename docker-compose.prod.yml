@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  app:
+    build: 
+      context: .
+      args:
+        - SPRING_PROFILES_ACTIVE=prod
+    image: ${DOCKER_REGISTRY:-localhost}/training-app:${APP_VERSION:-latest}
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${DB_NAME:-trainingdb}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME:-postgres}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-postgres}
+      - JWT_SECRET=${JWT_SECRET}
+      - LOGGING_LEVEL_COM_EXAMPLE_TRAINING=INFO
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=INFO
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-https://example.com}
+    restart: always
+    depends_on:
+      - db
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+  
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USERNAME:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=${DB_NAME:-trainingdb}
+    volumes:
+      - postgres-prod-data:/var/lib/postgresql/data
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+volumes:
+  postgres-prod-data:
+    name: training-postgres-prod-data

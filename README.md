@@ -126,6 +126,75 @@ This project follows the Git Flow branching strategy:
 - **Feature branches** - Created from `develop` for new features or changes (e.g., `feature/add-new-endpoint`).
 - **Hotfix branches** - Created from `master` for urgent fixes to production (e.g., `hotfix/fix-critical-bug`).
 
+## Environment Setup
+
+This project supports multiple environments:
+
+### Development Environment
+
+The development environment is used for ongoing development work and is associated with the `develop` branch.
+
+To start the development environment:
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
+This will:
+- Set the active profile to `dev`
+- Enable debug logging
+- Use development-specific settings
+
+### Production Environment
+
+The production environment is used for production deployments and is associated with the `master` branch.
+
+To start the production environment:
+
+```bash
+# Set required environment variables
+export JWT_SECRET=your-secure-jwt-secret
+export DB_USERNAME=prod-username
+export DB_PASSWORD=prod-password
+export DB_NAME=prod-db
+
+# Start the production environment
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+This will:
+- Set the active profile to `prod`
+- Use production-level logging (INFO)
+- Apply production-specific security settings
+- Use environment variables for sensitive information
+
+### Identifying the Current Environment
+
+You can identify which environment the application is running in by:
+
+1. Checking the logs at startup:
+   ```
+   Application Name: training
+   Application Version: 1.0.0
+   Active Profile: dev|prod
+   Environment: DEVELOPMENT|PRODUCTION
+   ```
+
+2. Using the environment endpoint:
+   ```bash
+   curl http://localhost:8080/api/v1/environment
+   ```
+
+   Response:
+   ```json
+   {
+     "activeProfile": "dev|prod",
+     "environment": "Development|Production",
+     "buildTime": "...",
+     "version": "1.0.0"
+   }
+   ```
+
 ### Workflow
 
 1. Create a feature branch from `develop`:

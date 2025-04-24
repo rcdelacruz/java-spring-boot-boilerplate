@@ -1,0 +1,65 @@
+name: Production CI/CD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: Build with Maven
+      run: ./mvnw clean package
+    
+    - name: Run tests
+      run: ./mvnw test
+    
+    - name: Run integration tests
+      run: ./mvnw verify -P integration-test
+    
+    - name: Build Docker image
+      run: docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
+      env:
+        SPRING_PROFILES_ACTIVE: prod
+        APP_VERSION: ${{ github.sha }}
+    
+    - name: Save test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: target/surefire-reports/
+    
+    - name: Save build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-jar
+        path: target/*.jar
+
+  # Add deployment to production environment if needed
+  # deploy-prod:
+  #   needs: build-and-test
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  #   
+  #   steps:
+  #   - name: Deploy to production
+  #     run: |
+  #       echo "Deploying to production environment"
+  #       # Add deployment steps here
+  #       # This could include:
+  #       # - Pushing to a container registry
+  #       # - Deploying to Kubernetes
+  #       # - Deploying to a cloud provider

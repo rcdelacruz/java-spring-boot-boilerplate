@@ -1,0 +1,24 @@
+version: '3.8'
+# Development environment configuration
+services:
+  app:
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/trainingdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - LOGGING_LEVEL_COM_EXAMPLE_TRAINING=DEBUG
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=DEBUG
+      - JWT_SECRET=dev-secret-key-for-local-development-only
+
+  db:
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=trainingdb
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-dev-data:
+    name: training-postgres-dev-data
