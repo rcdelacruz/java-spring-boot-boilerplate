@@ -82,7 +82,7 @@ src/main/java/com/example/training/
 The application supports the following user roles:
 
 - `USER` - Regular user with standard permissions
-- `ADMIN` - Administrator with full access to all features
+- `ADMIN` - Administrator with full access to all features and endpoints
 
 When registering a new user, you can specify the roles in the request body:
 ```json
