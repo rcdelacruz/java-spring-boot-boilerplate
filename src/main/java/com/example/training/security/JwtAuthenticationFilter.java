@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +23,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
+    
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        // Skip filter in development environments or GitHub Codespaces
+        return activeProfile.contains("local") || 
+               activeProfile.contains("dev") || 
+               System.getenv("CODESPACES") != null;
+    }
 
     @Override
     protected void doFilterInternal(
