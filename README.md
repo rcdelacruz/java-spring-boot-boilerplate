@@ -117,6 +117,39 @@ If no roles are specified during registration, the default role `USER` will be a
    ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
    ```
 
+## Branching Strategy
+
+This project follows the Git Flow branching strategy:
+
+- **`develop`** - Default branch for development work. All feature branches are created from and merged back into this branch.
+- **`master`** - Production branch that contains stable, release-ready code.
+- **Feature branches** - Created from `develop` for new features or changes (e.g., `feature/add-new-endpoint`).
+- **Hotfix branches** - Created from `master` for urgent fixes to production (e.g., `hotfix/fix-critical-bug`).
+
+### Workflow
+
+1. Create a feature branch from `develop`:
+   ```bash
+   git checkout develop
+   git pull
+   git checkout -b feature/your-feature-name
+   ```
+
+2. Make changes, commit, and push to the feature branch:
+   ```bash
+   git add .
+   git commit -m "Implement feature X"
+   git push -u origin feature/your-feature-name
+   ```
+
+3. Create a Pull Request (PR) from your feature branch to `develop`.
+
+4. After review and approval, merge the PR into `develop`.
+
+5. When ready for release, create a PR from `develop` to `master`.
+
+6. After testing and approval, merge the PR into `master` for production deployment.
+
 ## Authentication Example
 
 ### Register a new user
