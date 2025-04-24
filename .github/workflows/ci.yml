@@ -19,13 +19,16 @@ jobs:
           distribution: 'temurin'
           cache: maven
           
-      - name: Run Maven tests
-        run: mvn test
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
       
-      - name: Build Docker image
+      - name: Run tests
+        run: mvn test
+        
+      - name: Build Docker image (local only, no push)
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
-        run: docker build -t training-app:${{ github.sha }} .
+        run: docker build -t java-spring-boot-app:local .
           
-      - name: Docker image info
+      - name: Verify Docker image
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
-        run: docker images
+        run: docker images | grep java-spring-boot-app
