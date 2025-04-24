@@ -20,17 +20,14 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Make Maven wrapper executable
-      run: chmod +x ./mvnw
-
     - name: Build with Maven
-      run: ./mvnw clean package
+      run: mvn clean package
 
     - name: Run tests
-      run: ./mvnw test
+      run: mvn test
 
     - name: Run integration tests
-      run: ./mvnw verify -P integration-test
+      run: mvn verify -P integration-test
 
     - name: Build Docker image
       run: docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
