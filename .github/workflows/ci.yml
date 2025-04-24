@@ -19,14 +19,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
           
-      - name: Build and test with Maven
-        run: ./mvnw clean test
+      - name: Run Maven tests
+        run: mvn test
       
       - name: Build Docker image
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
-        run: |
-          chmod +x mvnw
-          docker build -t training-app:${{ github.sha }} .
+        run: docker build -t training-app:${{ github.sha }} .
           
       - name: Docker image info
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
