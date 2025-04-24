@@ -4,9 +4,48 @@ spring:
     url: jdbc:postgresql://db:5432/trainingdb
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
 
-# Logging
+  # JPA configuration
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+# Environment indicator
+environment:
+  name: Development
+  type: development
+
+# Logging configuration
 logging:
   level:
-    com.example.training: INFO
-    org.springframework.web: INFO
+    root: INFO
+    org.springframework: INFO
+    com.example.training: DEBUG
+    com.example.training.security: DEBUG
+    org.hibernate.SQL: DEBUG
+
+# API documentation - enabled in development
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+# Application-specific settings
+app:
+  security:
+    jwt:
+      # Only for development - use a secure secret in production
+      secret: ${JWT_SECRET:dev-secret-key-for-local-development-only}
+      expiration: 86400000 # 24 hours
+    cors:
+      allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+      allowed-headers: "*"
+    audit:
+      enabled: true
