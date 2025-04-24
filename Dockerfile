@@ -1,14 +1,15 @@
 # Build stage
 FROM maven:3.8.6-eclipse-temurin-17-alpine AS build
 WORKDIR /app
+
+# Copy maven files first to leverage Docker cache
 COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
-COPY mvnw.cmd .
-# This is for downloading dependencies
-RUN chmod +x mvnw && ./mvnw dependency:go-offline
+
+# Copy source code
 COPY src ./src
-RUN ./mvnw clean package -DskipTests
+
+# Build the application
+RUN mvn clean package -DskipTests
 
 # Run stage
 FROM eclipse-temurin:17-jre-alpine
