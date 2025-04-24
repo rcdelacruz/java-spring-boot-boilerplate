@@ -2,6 +2,7 @@ package com.example.training.config;
 
 import com.example.training.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,16 +28,34 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+    
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/api-docs/**", "/actuator/**").permitAll()
+        // Check if we're running in a development environment (local or dev profile)
+        boolean isDevelopment = activeProfile.contains("local") || activeProfile.contains("dev") || System.getenv("CODESPACES") != null;
+        
+        http.csrf(AbstractHttpConfigurer::disable);
+        
+        // If development environment, permit all requests
+        if (isDevelopment) {
+            http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        } else {
+            // Production security rules
+            http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/auth/**", 
+                                "/swagger-ui/**", 
+                                "/swagger-ui.html", 
+                                "/v3/api-docs/**", 
+                                "/api-docs/**", 
+                                "/actuator/**").permitAll()
                 .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> 
+            );
+        }
+        
+        http.sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
