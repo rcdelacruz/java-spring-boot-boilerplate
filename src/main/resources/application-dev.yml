@@ -1,0 +1,12 @@
+spring:
+  # Database configuration for dev environment
+  datasource:
+    url: jdbc:postgresql://db:5432/trainingdb
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+
+# Logging
+logging:
+  level:
+    com.example.training: INFO
+    org.springframework.web: INFO
