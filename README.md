@@ -2,6 +2,17 @@
 
 This boilerplate follows the Java Spring Boot Golden Path and serves as a foundation for training. It includes the standard project structure, key configurations, and example implementations of core components.
 
+## Features
+
+- Spring Boot 3.2.2
+- Spring Security with JWT authentication
+- Spring Data JPA with PostgreSQL
+- Flyway for database migrations
+- Swagger UI for API documentation
+- Docker and Docker Compose for containerization
+- Multi-environment support (development and production)
+- CI/CD workflows with GitHub Actions
+
 ## Project Structure
 
 ```
@@ -128,7 +139,25 @@ This project follows the Git Flow branching strategy:
 
 ## Environment Setup
 
-This project supports multiple environments:
+This project supports multiple environments with clear separation between development and production configurations.
+
+### Environment Structure
+
+The project uses the following files for environment configuration:
+
+- **Base Configuration**:
+  - `application.yml`: Common settings for all environments
+  - `docker-compose.yml`: Base Docker Compose configuration
+
+- **Development Environment**:
+  - `application-dev.yml`: Development-specific application settings
+  - `docker-compose.dev.yml`: Development-specific Docker settings
+  - `.github/workflows/dev-ci.yml`: CI/CD pipeline for the develop branch
+
+- **Production Environment**:
+  - `application-prod.yml`: Production-specific application settings
+  - `docker-compose.prod.yml`: Production-specific Docker settings
+  - `.github/workflows/prod-ci.yml`: CI/CD pipeline for the master branch
 
 ### Development Environment
 
@@ -144,6 +173,7 @@ This will:
 - Set the active profile to `dev`
 - Enable debug logging
 - Use development-specific settings
+- Use a named volume for development data persistence
 
 ### Production Environment
 
@@ -157,6 +187,7 @@ export JWT_SECRET=your-secure-jwt-secret
 export DB_USERNAME=prod-username
 export DB_PASSWORD=prod-password
 export DB_NAME=prod-db
+export CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com
 
 # Start the production environment
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
@@ -167,20 +198,25 @@ This will:
 - Use production-level logging (INFO)
 - Apply production-specific security settings
 - Use environment variables for sensitive information
+- Apply resource limits for containers
+- Use a separate named volume for production data
 
 ### Identifying the Current Environment
 
-You can identify which environment the application is running in by:
+You can identify which environment the application is running in through multiple methods:
 
-1. Checking the logs at startup:
+1. **Application Logs**: Check the logs at startup for clear environment indicators:
    ```
+   =============================================================
    Application Name: training
    Application Version: 1.0.0
+   Build Time: 2025-04-24T08:17:41.173Z
    Active Profile: dev|prod
    Environment: DEVELOPMENT|PRODUCTION
+   =============================================================
    ```
 
-2. Using the environment endpoint:
+2. **Environment Endpoint**: Use the dedicated environment information endpoint:
    ```bash
    curl http://localhost:8080/api/v1/environment
    ```
@@ -194,6 +230,40 @@ You can identify which environment the application is running in by:
      "version": "1.0.0"
    }
    ```
+
+3. **Application Banner**: The application displays a custom banner at startup that includes the active profile.
+
+### CI/CD Workflows
+
+The project includes GitHub Actions workflows for continuous integration and deployment:
+
+#### Development Workflow (`.github/workflows/dev-ci.yml`)
+
+Triggered on:
+- Push to the `develop` branch
+- Pull requests to the `develop` branch
+
+Steps:
+1. Build the application
+2. Run unit tests
+3. Run integration tests
+4. Build the Docker image with development settings
+5. Save test results and build artifacts
+
+#### Production Workflow (`.github/workflows/prod-ci.yml`)
+
+Triggered on:
+- Push to the `master` branch
+- Pull requests to the `master` branch
+
+Steps:
+1. Build the application
+2. Run unit tests
+3. Run integration tests
+4. Build the Docker image with production settings
+5. Save test results and build artifacts
+
+Both workflows can be extended to include deployment steps to your specific environments.
 
 ### Workflow
 
