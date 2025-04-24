@@ -1,11 +1,15 @@
 package com.example.training.controller;
 
 import com.example.training.dto.UserDto;
+import com.example.training.model.User;
+import com.example.training.repository.UserRepository;
 import com.example.training.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +20,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
@@ -41,5 +46,26 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getCurrentUser() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+
+            // Use the repository to find the user ID by username
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Current user not found"));
+
+            // Use the UserService to get the user details by ID
+            UserDto userDto = userService.getUserById(user.getId());
+
+            return ResponseEntity.ok(userDto);
+        } catch (Exception e) {
+            // Log the error
+            e.printStackTrace();
+            throw e;
+        }
     }
 }
