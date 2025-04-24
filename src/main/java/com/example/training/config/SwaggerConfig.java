@@ -55,18 +55,22 @@ public class SwaggerConfig {
 
         // Create description with environment details and colored badge
         String description = "Spring Boot Training Boilerplate API Documentation<br/><br/>" +
-                "<div style='display: flex; align-items: center; margin-bottom: 15px;'>" +
-                "<span style='background-color: " + badgeColor + "; color: white; padding: 5px 10px; " +
-                "border-radius: 4px; font-weight: bold; margin-right: 10px;'>" +
-                environmentBadge + "</span>" +
-                "<span style='font-size: 1.2em;'>Environment: " + environmentName + "</span>" +
+                "<div style='text-align: center; margin-bottom: 20px;'>" +
+                "<span style='background-color: " + badgeColor + "; color: white; padding: 8px 15px; " +
+                "border-radius: 4px; font-weight: bold; font-size: 16px; display: inline-block;'>" +
+                "ENVIRONMENT: " + environmentBadge + "</span>" +
                 "</div>" +
-                "<div style='padding: 10px; background-color: #f0f0f0; border-radius: 5px; margin-bottom: 10px;'>" +
+                "<div style='padding: 15px; background-color: #f0f0f0; border-radius: 5px; margin-bottom: 15px; border-left: 5px solid " + badgeColor + ";'>" +
                 "<strong>Environment:</strong> " + environmentName + "<br/>" +
                 "<strong>Profile:</strong> " + activeProfile + "<br/>" +
                 "<strong>Version:</strong> " + buildProperties.getVersion() + "<br/>" +
                 "<strong>Build Time:</strong> " + buildProperties.getTime() +
-                "</div>";
+                "</div>" +
+                (activeProfile.contains("prod") ?
+                "<div style='padding: 10px; background-color: #ffebee; border-radius: 5px; border-left: 5px solid #e74c3c; margin-bottom: 10px;'>" +
+                "<strong>⚠️ PRODUCTION ENVIRONMENT</strong><br/>" +
+                "Be careful with any API calls you make here as they will affect production data!" +
+                "</div>" : "");
 
         return new OpenAPI()
                 .info(new Info()
