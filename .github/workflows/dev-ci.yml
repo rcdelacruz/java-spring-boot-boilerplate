@@ -29,8 +29,11 @@ jobs:
     - name: Run integration tests
       run: mvn verify -P integration-test
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Build Docker image
-      run: docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
+      run: docker compose -f docker-compose.yml -f docker-compose.dev.yml build
 
     - name: Save test results
       uses: actions/upload-artifact@v4
