@@ -44,6 +44,7 @@ src/main/java/com/example/training/
 
 - Layered architecture following Spring Boot best practices
 - JWT-based authentication and authorization
+- User management with profile retrieval
 - Database migration with Flyway
 - Comprehensive exception handling
 - API documentation with OpenAPI/Swagger
@@ -63,6 +64,40 @@ src/main/java/com/example/training/
 4. Access the API documentation at: http://localhost:8080/swagger-ui.html
 5. Check the application health at: http://localhost:8080/actuator/health
 
+## API Endpoints
+
+### Authentication
+- `POST /api/v1/auth/register` - Register a new user
+- `POST /api/v1/auth/login` - Login and get JWT token
+
+### User Management
+- `GET /api/v1/users` - Get all users (admin only)
+- `GET /api/v1/users/{id}` - Get user by ID
+- `GET /api/v1/users/me` - Get current user profile
+- `PUT /api/v1/users/{id}` - Update user
+- `DELETE /api/v1/users/{id}` - Delete user
+
+## User Roles
+
+The application supports the following user roles:
+
+- `USER` - Regular user with standard permissions
+- `ADMIN` - Administrator with full access to all features and endpoints
+
+When registering a new user, you can specify the roles in the request body:
+```json
+{
+  "username": "newuser",
+  "email": "user@example.com",
+  "password": "password123",
+  "firstName": "New",
+  "lastName": "User",
+  "roles": ["USER"]
+}
+```
+
+If no roles are specified during registration, the default role `USER` will be assigned.
+
 ## Development Flow
 
 1. Build the application:
@@ -81,3 +116,25 @@ src/main/java/com/example/training/
    ```bash
    ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
    ```
+
+## Authentication Example
+
+### Register a new user
+```bash
+curl -X POST "http://localhost:8080/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"newuser","email":"user@example.com","password":"password123","firstName":"New","lastName":"User","roles":["USER"]}'
+```
+
+### Login and get JWT token
+```bash
+curl -X POST "http://localhost:8080/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"newuser","password":"password123"}'
+```
+
+### Get current user profile
+```bash
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:8080/api/v1/users/me
+```
