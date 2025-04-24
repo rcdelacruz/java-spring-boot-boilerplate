@@ -34,6 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Only skip for public endpoints
         String path = request.getRequestURI();
         return path.startsWith("/api/v1/auth/") ||
+               path.startsWith("/api/v1/environment") ||
                path.startsWith("/swagger-ui/") ||
                path.startsWith("/v3/api-docs/") ||
                path.startsWith("/api-docs/") ||

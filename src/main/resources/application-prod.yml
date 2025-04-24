@@ -17,6 +17,11 @@ spring:
         format_sql: false
         jdbc.batch_size: 50
 
+# Environment indicator
+environment:
+  name: Production
+  type: production
+
 # Logging configuration
 logging:
   level:

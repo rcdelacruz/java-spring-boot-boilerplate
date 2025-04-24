@@ -4,6 +4,11 @@ spring:
   profiles:
     active: local
 
+# Environment indicator
+environment:
+  name: Local Development
+  type: development
+
   # Database configuration
   datasource:
     url: jdbc:postgresql://localhost:5432/trainingdb

@@ -28,7 +28,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
-    
+
     @Value("${spring.profiles.active:}")
     private String activeProfile;
 
@@ -36,33 +36,34 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // Check if we're running in a development environment (local or dev profile)
         boolean isDevelopment = activeProfile.contains("local") || activeProfile.contains("dev") || System.getenv("CODESPACES") != null;
-        
+
         http.csrf(AbstractHttpConfigurer::disable);
-        
+
         // If development environment, permit all requests
         if (isDevelopment) {
             http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         } else {
             // Production security rules
             http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**", 
-                                "/swagger-ui/**", 
-                                "/swagger-ui.html", 
-                                "/v3/api-docs/**", 
-                                "/api-docs/**", 
+                .requestMatchers("/api/v1/auth/**",
+                                "/api/v1/environment",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/api-docs/**",
                                 "/actuator/**").permitAll()
                 .anyRequest().authenticated()
             );
         }
-        
-        http.sessionManagement(session -> 
+
+        http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-            
+
         return http.build();
     }
-    
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -70,12 +71,12 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
