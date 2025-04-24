@@ -50,11 +50,13 @@ public class SwaggerConfig {
         // Create title with environment badge
         String title = "Spring Boot Training API";
         if (!environmentBadge.isEmpty()) {
-            title = title + " - " + environmentBadge;
+            title = title + " [" + environmentBadge + "]";
         }
 
         // Create description with environment details and colored badge
-        String description = "Spring Boot Training Boilerplate API Documentation<br/><br/>" +
+        String description = "<h2 style='color: " + badgeColor + "; text-align: center; margin: 20px 0;'>" +
+                "⚠️ CURRENT ENVIRONMENT: " + environmentBadge + " ⚠️</h2>" +
+                "Spring Boot Training Boilerplate API Documentation<br/><br/>" +
                 "<div style='text-align: center; margin-bottom: 20px;'>" +
                 "<span style='background-color: " + badgeColor + "; color: white; padding: 8px 15px; " +
                 "border-radius: 4px; font-weight: bold; font-size: 16px; display: inline-block;'>" +
